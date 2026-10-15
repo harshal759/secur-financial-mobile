@@ -2877,7 +2877,7 @@
         "label": "Form Title",
         "value": "",
         "valueType": "string",
-        "description": "Heading shown above the slots. Leave empty to use \"Schedule a consultation\"."
+        "description": "Heading shown above the slots. Leave empty for no heading."
       },
       {
         "component": "text",
@@ -2885,7 +2885,7 @@
         "label": "Slots Label",
         "value": "",
         "valueType": "string",
-        "description": "Line above the slot picker. Leave empty to use \"Next Available Slots\"."
+        "description": "Line above the slot picker. Leave empty for no label."
       },
       {
         "component": "text",
