@@ -399,6 +399,15 @@
             "value": "right"
           }
         ]
+      },
+      {
+        "component": "text",
+        "name": "custommobilestyle",
+        "label": "Custom Mobile Style",
+        "value": "",
+        "valueType": "string[]",
+        "description": "Custom styles for the title on mobile",
+        "multi": true
       }
     ]
   },
@@ -419,12 +428,31 @@
         "label": "Text color",
         "valueType": "string",
         "description": "Hex color for text (e.g. #000000 or 333). Leave empty for default."
+      },
+      {
+        "component": "tab",
+        "label": "Mobile Specific",
+        "name": "mobileSpecific"
+      },
+      {
+        "component": "text",
+        "name": "custommobilestyle",
+        "label": "Custom Mobile Style",
+        "value": "",
+        "valueType": "string[]",
+        "description": "Custom styles for the text on mobile",
+        "multi": true
       }
     ]
   },
   {
     "id": "button",
     "fields": [
+      {
+        "component": "tab",
+        "label": "Basic",
+        "name": "basic"
+      },
       {
         "component": "aem-content",
         "name": "link",
@@ -566,6 +594,93 @@
         "label": "Border Width",
         "value": "",
         "valueType": "string"
+      },
+      {
+        "component": "tab",
+        "label": "Mobile Specific",
+        "name": "mobileSpecific"
+      },
+      {
+        "component": "select",
+        "name": "mobilebuttonvariant",
+        "label": "Variant",
+        "options": [
+          {
+            "name": "Primary",
+            "value": "contained"
+          },
+          {
+            "name": "Secondary",
+            "value": "contained-tonal"
+          },
+          {
+            "name": "Outlined",
+            "value": "outlined"
+          },
+          {
+            "name": "Quiet",
+            "value": "text"
+          },
+          {
+            "name": "Elevated",
+            "value": "elevated"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "mobilealignment",
+        "label": "Alignment",
+        "options": [
+          {
+            "name": "Left",
+            "value": "left"
+          },
+          {
+            "name": "Center",
+            "value": "center"
+          },
+          {
+            "name": "Right",
+            "value": "right"
+          },
+          {
+            "name": "Stretch",
+            "value": "stretch"
+          }
+        ]
+      },
+      {
+        "component": "text",
+        "name": "mobileicon",
+        "label": "Icon",
+        "value": "",
+        "valueType": "string",
+        "description": "Icon name shown on the mobile button, e.g. credit-card"
+      },
+      {
+        "component": "text",
+        "name": "mobilebuttoneventtype",
+        "label": "Mobile Button Event Type",
+        "value": "",
+        "valueType": "string"
+      },
+      {
+        "component": "text",
+        "name": "mobilemessage",
+        "label": "Message",
+        "value": "",
+        "valueType": "string",
+        "description": "Message shown on the mobile app after the button's event runs"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "custommobilestyle",
+        "label": "Custom Mobile Style",
+        "value": "",
+        "multi": true,
+        "description": "Custom styles for the button on mobile"
       }
     ]
   },
@@ -1091,6 +1206,11 @@
     "id": "columns",
     "fields": [
       {
+        "component": "tab",
+        "label": "Basic",
+        "name": "basic"
+      },
+      {
         "component": "text",
         "valueType": "number",
         "name": "columns",
@@ -1119,6 +1239,42 @@
         "value": "",
         "valueType": "string",
         "description": "Space-separated class names to add to the block"
+      },
+      {
+        "component": "tab",
+        "label": "Mobile Specific",
+        "name": "mobileSpecific"
+      },
+      {
+        "component": "select",
+        "name": "mobilelayout",
+        "label": "Layout",
+        "valueType": "string",
+        "value": "",
+        "description": "How this block's columns are laid out in the mobile app",
+        "options": [
+          {
+            "name": "Default",
+            "value": ""
+          },
+          {
+            "name": "Vertical",
+            "value": "vertical"
+          },
+          {
+            "name": "Horizontal",
+            "value": "horizontal"
+          }
+        ]
+      },
+      {
+        "component": "text",
+        "name": "custommobilestyle",
+        "label": "Custom Mobile Style",
+        "value": "",
+        "valueType": "string[]",
+        "multi": true,
+        "description": "One style per row, as key:value (e.g. gap:16, padding:16)"
       }
     ]
   },
@@ -2703,6 +2859,125 @@
     ]
   },
   {
+    "id": "schedule-consultation",
+    "fields": [
+      {
+        "component": "tab",
+        "label": "Basic",
+        "name": "basic"
+      },
+      {
+        "component": "text",
+        "name": "form-title",
+        "label": "Form Title",
+        "value": "",
+        "valueType": "string",
+        "description": "Heading shown above the slots. Leave empty to use \"Schedule a consultation\"."
+      },
+      {
+        "component": "text",
+        "name": "slots-label",
+        "label": "Slots Label",
+        "value": "",
+        "valueType": "string",
+        "description": "Line above the slot picker. Leave empty to use \"Next Available Slots\"."
+      },
+      {
+        "component": "text",
+        "name": "submit-label",
+        "label": "Submit Label",
+        "value": "",
+        "valueType": "string",
+        "description": "Button text. Leave empty to use \"Schedule Call\"."
+      },
+      {
+        "component": "text",
+        "name": "time-slots",
+        "label": "Time Slots (comma-separated)",
+        "value": "9 AM, 10 AM, 11 AM, 12 PM",
+        "valueType": "string",
+        "description": "Comma-separated list of time slots shown each day"
+      },
+      {
+        "component": "text",
+        "name": "days-shown",
+        "label": "Days Shown",
+        "value": "3",
+        "valueType": "string",
+        "description": "Number of day columns to display at once (1-7)"
+      },
+      {
+        "component": "text",
+        "name": "mobile-days-shown",
+        "label": "Mobile Days Shown",
+        "value": "2",
+        "valueType": "string",
+        "description": "Number of day columns to display at once for mobile (1-7)"
+      },
+      {
+        "component": "text",
+        "name": "success-message",
+        "label": "Success Message",
+        "value": "",
+        "valueType": "string"
+      },
+      {
+        "component": "aem-content",
+        "name": "redirect-url",
+        "label": "Redirect URL (after submit)",
+        "valueType": "string",
+        "description": "Optional page to redirect to 2 seconds after successful submission"
+      },
+      {
+        "component": "text",
+        "name": "buttoneventtype",
+        "label": "Button Event Type",
+        "value": "",
+        "valueType": "string"
+      },
+      {
+        "component": "text",
+        "name": "buttonwebhookurl",
+        "label": "Button Webhook URL",
+        "value": "",
+        "valueType": "string"
+      },
+      {
+        "component": "text",
+        "name": "buttonformid",
+        "label": "Button Form ID",
+        "value": "",
+        "valueType": "string"
+      },
+      {
+        "component": "aem-content",
+        "name": "buttondata",
+        "label": "Button Data Sheet",
+        "valueType": "string",
+        "description": "AEM sheet path whose key/value rows are sent on submit"
+      },
+      {
+        "component": "tab",
+        "label": "Mobile Specific",
+        "name": "mobileSpecific"
+      },
+      {
+        "component": "text",
+        "name": "mobilebuttoneventtype",
+        "label": "Mobile Button Event Type",
+        "value": "",
+        "valueType": "string"
+      },
+      {
+        "component": "aem-content",
+        "name": "mobileRedirectUrl",
+        "label": "Mobile Redirect URL",
+        "valueType": "string",
+        "description": "Page the app opens after a successful submit. Leave empty to stay on the form."
+      }
+    ]
+  },
+  {
     "id": "confirmation",
     "fields": [
       {
@@ -2887,6 +3162,33 @@
         "value": "",
         "valueType": "string",
         "description": "Space-separated class names to add to the block"
+      },
+      {
+        "component": "tab",
+        "label": "Mobile Specific",
+        "name": "mobileSpecific"
+      },
+      {
+        "component": "select",
+        "name": "mobilelayout",
+        "label": "Layout",
+        "valueType": "string",
+        "value": "",
+        "description": "How this column's items are laid out in the mobile app",
+        "options": [
+          {
+            "name": "Default",
+            "value": ""
+          },
+          {
+            "name": "Vertical",
+            "value": "vertical"
+          },
+          {
+            "name": "Horizontal",
+            "value": "horizontal"
+          }
+        ]
       }
     ]
   },
@@ -3046,10 +3348,26 @@
       },
       {
         "component": "text",
+        "name": "mobileicon",
+        "label": "Icon",
+        "value": "",
+        "valueType": "string",
+        "description": "Icon name shown on the mobile button, e.g. credit-card"
+      },
+      {
+        "component": "text",
         "name": "mobilebuttoneventtype",
-        "label": "Button Event Type",
+        "label": "Mobile Button Event Type",
         "value": "",
         "valueType": "string"
+      },
+      {
+        "component": "text",
+        "name": "mobilemessage",
+        "label": "Message",
+        "value": "",
+        "valueType": "string",
+        "description": "Message shown on the mobile app after the button's event runs"
       },
       {
         "component": "text",
