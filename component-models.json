@@ -1464,6 +1464,11 @@
     "id": "product-card",
     "fields": [
       {
+        "component": "tab",
+        "label": "Basic",
+        "name": "basic"
+      },
+      {
         "component": "aem-content",
         "name": "contentFragmentFolder",
         "label": "Content Fragment Folder",
@@ -1576,11 +1581,67 @@
         "description": "Space-separated class names to add to the block"
       },
       {
+        "component": "tab",
+        "label": "Mobile Specific",
+        "name": "mobileSpecific"
+      },
+      {
+        "component": "select",
+        "name": "mobilecardstyle",
+        "label": "Card Type",
+        "valueType": "string",
+        "value": "overlay",
+        "options": [
+          {
+            "name": "Image and text in one line",
+            "value": "image-text-one-line"
+          },
+          {
+            "name": "Image and text overlay",
+            "value": "overlay"
+          },
+          {
+            "name": "Image and text below",
+            "value": "stacked"
+          },
+          {
+            "name": "Image partially overlayed",
+            "value": "partial-overlay"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "mobileimagestyle",
+        "label": "Image Resize Mode",
+        "valueType": "string",
+        "value": "",
+        "options": [
+          {
+            "name": "Contain",
+            "value": "contain"
+          },
+          {
+            "name": "Cover",
+            "value": "cover"
+          }
+        ]
+      },
+      {
         "component": "text",
         "name": "mobilebuttoneventtype",
         "label": "Mobile Button Event Type",
         "value": "",
         "valueType": "string"
+      },
+      {
+        "component": "text",
+        "name": "custommobilestyle",
+        "label": "Custom Mobile Style",
+        "value": "",
+        "valueType": "string[]",
+        "description": "Custom styles for the card on mobile",
+        "multi": true
       }
     ]
   },
