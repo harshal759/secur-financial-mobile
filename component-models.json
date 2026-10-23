@@ -2538,6 +2538,18 @@
     "id": "add-external",
     "fields": [
       {
+        "component": "tab",
+        "label": "Basic",
+        "name": "basic"
+      },
+      {
+        "component": "text",
+        "name": "form-title",
+        "label": "Form Title",
+        "valueType": "string",
+        "description": "Heading displayed at the top of the form. Leave empty to keep the default title."
+      },
+      {
         "component": "select",
         "name": "variant",
         "label": "Variant",
@@ -2592,11 +2604,25 @@
         "description": "Space-separated class names to add to the block"
       },
       {
+        "component": "tab",
+        "label": "Mobile Specific",
+        "name": "mobileSpecific"
+      },
+      {
         "component": "text",
         "name": "mobilebuttoneventtype",
         "label": "Mobile Button Event Type",
         "value": "",
         "valueType": "string"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "custommobilestyle",
+        "label": "Custom Mobile Style",
+        "value": "",
+        "multi": true,
+        "description": "Custom styles for the form on mobile"
       }
     ]
   },
@@ -3486,6 +3512,18 @@
     "id": "transfer-funds",
     "fields": [
       {
+        "component": "tab",
+        "label": "Basic",
+        "name": "basic"
+      },
+      {
+        "component": "text",
+        "name": "form-title",
+        "label": "Form Title",
+        "valueType": "string",
+        "description": "Heading displayed at the top of the form. Leave empty to keep the default title."
+      },
+      {
         "component": "aem-content",
         "valueType": "string",
         "name": "redirectUrl",
@@ -3529,17 +3567,43 @@
         "description": "Space-separated class names to add to the block"
       },
       {
+        "component": "tab",
+        "label": "Mobile Specific",
+        "name": "mobileSpecific"
+      },
+      {
         "component": "text",
         "name": "mobilebuttoneventtype",
         "label": "Mobile Button Event Type",
         "value": "",
         "valueType": "string"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "custommobilestyle",
+        "label": "Custom Mobile Style",
+        "value": "",
+        "multi": true,
+        "description": "Custom styles for the form on mobile"
       }
     ]
   },
   {
     "id": "set-up-auto-save",
     "fields": [
+      {
+        "component": "tab",
+        "label": "Basic",
+        "name": "basic"
+      },
+      {
+        "component": "text",
+        "name": "form-title",
+        "label": "Form Title",
+        "valueType": "string",
+        "description": "Heading displayed at the top of the form. Leave empty to keep the default title."
+      },
       {
         "component": "aem-content",
         "valueType": "string",
@@ -3584,11 +3648,25 @@
         "description": "Space-separated class names to add to the block"
       },
       {
+        "component": "tab",
+        "label": "Mobile Specific",
+        "name": "mobileSpecific"
+      },
+      {
         "component": "text",
         "name": "mobilebuttoneventtype",
         "label": "Mobile Button Event Type",
         "value": "",
         "valueType": "string"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "custommobilestyle",
+        "label": "Custom Mobile Style",
+        "value": "",
+        "multi": true,
+        "description": "Custom styles for the form on mobile"
       }
     ]
   },
@@ -4168,6 +4246,18 @@
     "id": "child-account-application",
     "fields": [
       {
+        "component": "tab",
+        "label": "Basic",
+        "name": "basic"
+      },
+      {
+        "component": "text",
+        "name": "form-title",
+        "label": "Form Title",
+        "valueType": "string",
+        "description": "Heading displayed at the top of the form. Leave empty to keep the default title."
+      },
+      {
         "component": "aem-content",
         "valueType": "string",
         "name": "redirectUrl",
@@ -4211,17 +4301,43 @@
         "description": "Space-separated class names to add to the block"
       },
       {
+        "component": "tab",
+        "label": "Mobile Specific",
+        "name": "mobileSpecific"
+      },
+      {
         "component": "text",
         "name": "mobilebuttoneventtype",
         "label": "Mobile Button Event Type",
         "value": "",
         "valueType": "string"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "custommobilestyle",
+        "label": "Custom Mobile Style",
+        "value": "",
+        "multi": true,
+        "description": "Custom styles for the form on mobile"
       }
     ]
   },
   {
     "id": "name-change-request",
     "fields": [
+      {
+        "component": "tab",
+        "label": "Basic",
+        "name": "basic"
+      },
+      {
+        "component": "text",
+        "name": "form-title",
+        "label": "Form Title",
+        "valueType": "string",
+        "description": "Heading displayed at the top of the form. Leave empty to keep the default title."
+      },
       {
         "component": "aem-content",
         "valueType": "string",
@@ -4266,11 +4382,25 @@
         "description": "Space-separated class names to add to the block"
       },
       {
+        "component": "tab",
+        "label": "Mobile Specific",
+        "name": "mobileSpecific"
+      },
+      {
         "component": "text",
         "name": "mobilebuttoneventtype",
         "label": "Mobile Button Event Type",
         "value": "",
         "valueType": "string"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "custommobilestyle",
+        "label": "Custom Mobile Style",
+        "value": "",
+        "multi": true,
+        "description": "Custom styles for the form on mobile"
       }
     ]
   },
