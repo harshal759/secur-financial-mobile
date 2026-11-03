@@ -2554,7 +2554,6 @@
         "component": "text",
         "name": "title",
         "label": "Title",
-        "value": "Life Insurance",
         "valueType": "string",
         "description": "Main heading of the form"
       },
@@ -3199,7 +3198,6 @@
         "component": "text",
         "name": "form-title",
         "label": "Form Title",
-        "value": "JOIN WKND FLY CLUB",
         "valueType": "string"
       },
       {
