@@ -46,7 +46,7 @@ function applyButtonConfigToSubmitButton(block, config) {
 
 function buildFormDef(config) {
   const formTitle = String(config['form-title'] ?? '').trim();
-  const submitLabel = config['submit-label'] || DEFAULTS.submitLabel;
+  const submitLabel = config['button-label'] || config['submit-label'] || DEFAULTS.submitLabel;
 
   return {
     id: 'schedule-consultation',
