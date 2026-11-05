@@ -3080,7 +3080,7 @@
       },
       {
         "component": "text",
-        "name": "button-label",
+        "name": "submit-label",
         "label": "Submit Label",
         "value": "",
         "valueType": "string",
