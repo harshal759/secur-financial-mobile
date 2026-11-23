@@ -81,9 +81,8 @@ export function syncFormDataLayer(form, fieldMap) {
  * (e.g. the result of globals.functions.exportData()).
  * Each field's `name` is its data layer path (person.name.firstName), so the values are
  * placed at their own names. Nested data objects are flattened to dotted paths first.
- * Pass a { fieldName: 'data.layer.path' } map only to override names.
  */
-export function buildDataLayerUpdatesFromData(data, fieldMap) {
+export function buildDataLayerUpdatesFromData(data) {
   if (!data || typeof data !== 'object') return null;
   const updates = {};
   const visit = (value, path) => {
@@ -92,25 +91,11 @@ export function buildDataLayerUpdatesFromData(data, fieldMap) {
       return;
     }
     const normalized = normalizeValue(Array.isArray(value) ? value.join(',') : value);
-    const target = fieldMap ? fieldMap[path] : path;
-    if (!path || !target || !hasData(normalized)) return;
-    setNestedValue(updates, target, normalized);
+    if (!path || !hasData(normalized)) return;
+    setNestedValue(updates, path, normalized);
   };
   visit(data, '');
   return Object.keys(updates).length ? updates : null;
-}
-
-/**
- * POSTs JSON and throws when the response is not ok, so callers can show a failure state.
- */
-export async function postJson(url, payload) {
-  const resp = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-  if (!resp.ok) throw new Error(`Submission failed with status ${resp.status}`);
-  return resp;
 }
 
 export async function submitToWebhook(form, webhookUrl, formId) {
