@@ -1,4 +1,5 @@
 import { buildDataLayerUpdatesFromData } from '../../scripts/form-data-layer.js';
+import { dispatchCustomEvent } from '../../scripts/custom-events.js';
 
 /**
  * Get Full Name
@@ -59,7 +60,47 @@ function pushFormToDataLayer(globals) {
   return true;
 }
 
+/**
+ * Set the Launch identity from an email address
+ * @name setLaunchIdentity Stores the email so Launch and Web SDK can identify the user
+ * @param {string} email
+ * @return {boolean} true when the identity was stored
+ */
+function setLaunchIdentity(email) {
+  const id = String(email || '').trim();
+  if (!id || typeof window === 'undefined') return false;
+  const identity = JSON.stringify({ Email: [{ id, primary: true, authenticatedState: 'authenticated' }] });
+  try {
+    localStorage.setItem('com.adobe.reactor.dataElements.Identities', identity);
+    sessionStorage.setItem('com.adobe.reactor.dataElements.Identity Map', identity);
+    localStorage.setItem('com.adobe.reactor.dataElements.Profile - Email', id);
+    // eslint-disable-next-line no-underscore-dangle
+    const satellite = window._satellite;
+    if (satellite && typeof satellite.setVar === 'function') {
+      satellite.setVar('Profile - Email', id);
+    }
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+/**
+ * Fire a Launch custom event
+ * @name fireLaunchEvent Fires the Launch event with a copy of the current data layer
+ * @param {string} eventName Launch event name, for example create-account-submit
+ * @return {boolean} true when the event was fired, false when it was queued until Launch is ready
+ */
+function fireLaunchEvent(eventName) {
+  return dispatchCustomEvent(eventName);
+}
+
 // eslint-disable-next-line import/prefer-default-export
 export {
-  getFullName, days, submitFormArrayToString, pushFormToDataLayer,
+  getFullName,
+  days,
+  submitFormArrayToString,
+  pushFormToDataLayer,
+  setLaunchIdentity,
+  fireLaunchEvent,
 };
