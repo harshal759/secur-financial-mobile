@@ -106,6 +106,76 @@ function setMobileEventType(eventType) {
   return String(eventType || '').trim();
 }
 
+/**
+ * Track a wizard form
+ * @name trackWizard Tracks a wizard form: start, each step, and abandonment
+ * @param {string} startEvent Launch event fired when the wizard starts, for example form-start
+ * @param {string} stepEvent Launch event fired on each step forward, for example form-step
+ * @param {string} abandonedEvent Launch event fired when the user leaves before submitting
+ * @param {string} wizardName Name sent in the wizard data layer object
+ * @param {string} wizardTitle Title sent in the wizard data layer object
+ * @param {scope} globals
+ * @return {boolean} true when tracking started, false when there is no wizard to track yet
+ */
+function trackWizard(startEvent, stepEvent, abandonedEvent, wizardName, wizardTitle, globals) {
+  if (typeof document === 'undefined' || typeof window === 'undefined') return false;
+  const wizard = document.getElementById(globals?.field?.$id) || document.querySelector('form .wizard');
+  if (!wizard || wizard.dataset.wizardTracked === 'true') return false;
+  wizard.dataset.wizardTracked = 'true';
+
+  const form = wizard.closest('form') || document.querySelector('form');
+  const titles = () => [...wizard.querySelectorAll('.wizard-menu-item')]
+    .map((item) => item.textContent.trim());
+  const pushWizard = (stepIndex) => {
+    const stepTitles = titles();
+    if (!stepTitles.length || typeof window.updateDataLayer !== 'function') return;
+    window.updateDataLayer({
+      wizard: {
+        name: wizardName,
+        title: wizardTitle,
+        steps: stepTitles.map((title, index) => ({ name: `${wizardName}-step-${index + 1}`, title })),
+        currentStep: stepIndex + 1,
+      },
+    });
+  };
+  const pushValues = () => {
+    const updates = buildDataLayerUpdatesFromData(globals.functions.exportData());
+    if (updates && typeof window.updateDataLayer === 'function') window.updateDataLayer(updates);
+  };
+
+  wizard.addEventListener('wizard:navigate', (event) => {
+    const { prevStep, currStep } = event.detail || {};
+    pushValues();
+    if (Number.isFinite(prevStep?.index) && Number.isFinite(currStep?.index)
+      && currStep.index > prevStep.index) {
+      pushWizard(currStep.index);
+      dispatchCustomEvent(stepEvent);
+    }
+  });
+
+  let submitted = false;
+  let abandoned = false;
+  if (form) {
+    form.addEventListener('submit', () => { submitted = true; }, true);
+    form.addEventListener('click', (event) => {
+      if (event.target?.closest?.('button[type="submit"]')) submitted = true;
+    }, true);
+  }
+  const abandon = () => {
+    if (submitted || abandoned) return;
+    abandoned = true;
+    dispatchCustomEvent(abandonedEvent);
+  };
+  window.addEventListener('pagehide', abandon);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') abandon();
+  });
+
+  pushWizard(0);
+  dispatchCustomEvent(startEvent);
+  return true;
+}
+
 // eslint-disable-next-line import/prefer-default-export
 export {
   getFullName,
@@ -115,4 +185,5 @@ export {
   setLaunchIdentity,
   fireLaunchEvent,
   setMobileEventType,
+  trackWizard,
 };
