@@ -95,6 +95,17 @@ function fireLaunchEvent(eventName) {
   return dispatchCustomEvent(eventName);
 }
 
+/**
+ * Set the mobile event type
+ * @name setMobileEventType Sets the event type the mobile app sends for this form
+ * @param {string} eventType Mobile event type, for example mobile.registration
+ * @return {string} the event type
+ */
+function setMobileEventType(eventType) {
+  // Does nothing in the browser. The rule only stores the value for the mobile app export to read.
+  return String(eventType || '').trim();
+}
+
 // eslint-disable-next-line import/prefer-default-export
 export {
   getFullName,
@@ -103,4 +114,5 @@ export {
   pushFormToDataLayer,
   setLaunchIdentity,
   fireLaunchEvent,
+  setMobileEventType,
 };
