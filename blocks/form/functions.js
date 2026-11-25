@@ -46,10 +46,10 @@ function days(endDate, startDate) {
 }
 
 /**
- * Push the current form values to the data layer
- * @name pushFormToDataLayer Pushes the form values to the data layer without submitting
+ * Pushes the form values to the data layer.
+ * @name pushFormToDataLayer Push form to data layer
  * @param {scope} globals
- * @return {boolean} true when the data layer was updated
+ * @return {boolean}
  */
 function pushFormToDataLayer(globals) {
   const updates = buildDataLayerUpdatesFromData(globals.functions.exportData());
@@ -61,10 +61,10 @@ function pushFormToDataLayer(globals) {
 }
 
 /**
- * Set the Launch identity from an email address
- * @name setLaunchIdentity Stores the email so Launch and Web SDK can identify the user
+ * Stores the email so Launch and the Web SDK can identify the user.
+ * @name setLaunchIdentity Set Launch identity
  * @param {string} email
- * @return {boolean} true when the identity was stored
+ * @return {boolean}
  */
 function setLaunchIdentity(email) {
   const id = String(email || '').trim();
@@ -86,20 +86,20 @@ function setLaunchIdentity(email) {
 }
 
 /**
- * Fire a Launch custom event
- * @name fireLaunchEvent Fires the Launch event with a copy of the current data layer
- * @param {string} eventName Launch event name, for example create-account-submit
- * @return {boolean} true when the event was fired, false when it was queued until Launch is ready
+ * Fires a Launch event with a copy of the current data layer.
+ * @name fireLaunchEvent Fire Launch event
+ * @param {string} eventName
+ * @return {boolean}
  */
 function fireLaunchEvent(eventName) {
   return dispatchCustomEvent(eventName);
 }
 
 /**
- * Set the mobile event type
- * @name setMobileEventType Sets the event type the mobile app sends for this form
- * @param {string} eventType Mobile event type, for example mobile.registration
- * @return {string} the event type
+ * Sets the event type the mobile app sends for this form. Does nothing in the browser.
+ * @name setMobileEventType Set mobile event type
+ * @param {string} eventType
+ * @return {string}
  */
 function setMobileEventType(eventType) {
   // Does nothing in the browser. The rule only stores the value for the mobile app export to read.
@@ -108,7 +108,10 @@ function setMobileEventType(eventType) {
 
 const WIZARD_CHANNEL = 'trackWizard';
 
-/** The form's current values by field name, read from the page. A name is a data layer path. */
+/**
+ * The form's current values by field name, read from the page. A name is a data layer path.
+ * @private
+ */
 function readFormValues(form) {
   const data = {};
   [...form.elements].forEach((el) => {
@@ -119,13 +122,19 @@ function readFormValues(form) {
   return data;
 }
 
+/**
+ * @private
+ */
 function findWizard(wizardId) {
   const byId = wizardId ? document.querySelector(`[data-id="${wizardId}"]`) : null;
   return (byId && (byId.classList.contains('wizard') ? byId : byId.querySelector('.wizard')))
     || document.querySelector('form .wizard');
 }
 
-/** Waits for the wizard to be rendered: the rule runs in the worker, before any HTML exists. */
+/**
+ * Waits for the wizard to be rendered: the rule runs in the worker, before any HTML exists.
+ * @private
+ */
 function whenWizardRendered(wizardId, callback) {
   const found = findWizard(wizardId);
   if (found) {
@@ -143,6 +152,9 @@ function whenWizardRendered(wizardId, callback) {
   setTimeout(() => observer.disconnect(), 15000);
 }
 
+/**
+ * @private
+ */
 function startWizardTracking(config) {
   whenWizardRendered(config.wizardId, (wizard) => {
     if (wizard.dataset.wizardTracked === 'true') return;
@@ -214,15 +226,15 @@ if (typeof document !== 'undefined' && typeof BroadcastChannel !== 'undefined') 
 }
 
 /**
- * Track a wizard form
- * @name trackWizard Tracks a wizard form: start, each step, and abandonment
- * @param {string} startEvent Launch event fired when the wizard starts, for example form-start
- * @param {string} stepEvent Launch event fired on each step forward, for example form-step
- * @param {string} abandonedEvent Launch event fired when the user leaves before submitting
- * @param {string} wizardName Name sent in the wizard data layer object
- * @param {string} wizardTitle Title sent in the wizard data layer object
+ * Tracks a wizard form: start, each step forward, and leaving before submit.
+ * @name trackWizard Track wizard
+ * @param {string} startEvent
+ * @param {string} stepEvent
+ * @param {string} abandonedEvent
+ * @param {string} wizardName
+ * @param {string} wizardTitle
  * @param {scope} globals
- * @return {boolean} true when tracking was started or handed to the page
+ * @return {boolean}
  */
 function trackWizard(startEvent, stepEvent, abandonedEvent, wizardName, wizardTitle, globals) {
   const config = {
@@ -247,12 +259,12 @@ function trackWizard(startEvent, stepEvent, abandonedEvent, wizardName, wizardTi
 }
 
 /**
- * Track the submit and submit the form
- * @name trackSubmit Tracks the submit (data layer, identity, Launch event), then submits the form
- * @param {string} eventName Launch event fired on submit, for example create-account-submit
- * @param {string} email Email of the user, taken from the form field the author picks
+ * Pushes the data layer, sets the identity, fires the Launch event and submits the form.
+ * @name trackSubmit Track and submit
+ * @param {string} eventName
+ * @param {string} email
  * @param {scope} globals
- * @return {boolean} true when the form was valid and submitted, false when it has errors
+ * @return {boolean}
  */
 function trackSubmit(eventName, email, globals) {
   // The same steps as pushFormToDataLayer, setLaunchIdentity and fireLaunchEvent, run in this order
