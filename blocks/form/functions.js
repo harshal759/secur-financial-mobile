@@ -197,6 +197,9 @@ function startWizardTracking(config) {
     let submitted = false;
     let abandoned = false;
     if (form) {
+      // Keep the data layer current as people type, like the custom form blocks do.
+      form.addEventListener('input', pushValues);
+      form.addEventListener('change', pushValues);
       form.addEventListener('submit', () => { submitted = true; }, true);
       form.addEventListener('click', (event) => {
         if (event.target?.closest?.('button[type="submit"]')) submitted = true;
