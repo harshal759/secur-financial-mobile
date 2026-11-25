@@ -106,6 +106,113 @@ function setMobileEventType(eventType) {
   return String(eventType || '').trim();
 }
 
+const WIZARD_CHANNEL = 'trackWizard';
+
+/** The form's current values by field name, read from the page. A name is a data layer path. */
+function readFormValues(form) {
+  const data = {};
+  [...form.elements].forEach((el) => {
+    if (!el.name || el.disabled || el.tagName === 'FIELDSET' || el.tagName === 'BUTTON') return;
+    if ((el.type === 'checkbox' || el.type === 'radio') && !el.checked) return;
+    data[el.name] = el.value;
+  });
+  return data;
+}
+
+function findWizard(wizardId) {
+  const byId = wizardId ? document.querySelector(`[data-id="${wizardId}"]`) : null;
+  return (byId && (byId.classList.contains('wizard') ? byId : byId.querySelector('.wizard')))
+    || document.querySelector('form .wizard');
+}
+
+/** Waits for the wizard to be rendered: the rule runs in the worker, before any HTML exists. */
+function whenWizardRendered(wizardId, callback) {
+  const found = findWizard(wizardId);
+  if (found) {
+    callback(found);
+    return;
+  }
+  const observer = new MutationObserver(() => {
+    const wizard = findWizard(wizardId);
+    if (wizard) {
+      observer.disconnect();
+      callback(wizard);
+    }
+  });
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+  setTimeout(() => observer.disconnect(), 15000);
+}
+
+function startWizardTracking(config) {
+  whenWizardRendered(config.wizardId, (wizard) => {
+    if (wizard.dataset.wizardTracked === 'true') return;
+    wizard.dataset.wizardTracked = 'true';
+    const {
+      startEvent, stepEvent, abandonedEvent, wizardName, wizardTitle,
+    } = config;
+    const form = wizard.closest('form') || document.querySelector('form');
+
+    const pushWizard = (stepIndex) => {
+      const titles = [...wizard.querySelectorAll('.wizard-menu-item')]
+        .map((item) => item.textContent.trim());
+      if (!titles.length || typeof window.updateDataLayer !== 'function') return;
+      window.updateDataLayer({
+        wizard: {
+          name: wizardName,
+          title: wizardTitle,
+          steps: titles.map((title, index) => (
+            { name: `${wizardName}-step-${index + 1}`, title }
+          )),
+          currentStep: stepIndex + 1,
+        },
+      });
+    };
+    const pushValues = () => {
+      const updates = buildDataLayerUpdatesFromData(form ? readFormValues(form) : {});
+      if (updates && typeof window.updateDataLayer === 'function') window.updateDataLayer(updates);
+    };
+
+    wizard.addEventListener('wizard:navigate', (event) => {
+      const { prevStep, currStep } = event.detail || {};
+      pushValues();
+      if (Number.isFinite(prevStep?.index) && Number.isFinite(currStep?.index)
+        && currStep.index > prevStep.index) {
+        pushWizard(currStep.index);
+        dispatchCustomEvent(stepEvent);
+      }
+    });
+
+    let submitted = false;
+    let abandoned = false;
+    if (form) {
+      form.addEventListener('submit', () => { submitted = true; }, true);
+      form.addEventListener('click', (event) => {
+        if (event.target?.closest?.('button[type="submit"]')) submitted = true;
+      }, true);
+    }
+    const abandon = () => {
+      if (submitted || abandoned) return;
+      abandoned = true;
+      dispatchCustomEvent(abandonedEvent);
+    };
+    window.addEventListener('pagehide', abandon);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') abandon();
+    });
+
+    pushWizard(0);
+    dispatchCustomEvent(startEvent);
+  });
+}
+
+// The page side of trackWizard. This module is loaded in the page before the rule engine's worker
+// starts, so the listener is in place when the worker's initialize rule sends its message.
+let wizardChannel;
+if (typeof document !== 'undefined' && typeof BroadcastChannel !== 'undefined') {
+  wizardChannel = new BroadcastChannel(WIZARD_CHANNEL);
+  wizardChannel.onmessage = (event) => startWizardTracking(event.data || {});
+}
+
 /**
  * Track a wizard form
  * @name trackWizard Tracks a wizard form: start, each step, and abandonment
@@ -115,64 +222,47 @@ function setMobileEventType(eventType) {
  * @param {string} wizardName Name sent in the wizard data layer object
  * @param {string} wizardTitle Title sent in the wizard data layer object
  * @param {scope} globals
- * @return {boolean} true when tracking started, false when there is no wizard to track yet
+ * @return {boolean} true when tracking was started or handed to the page
  */
 function trackWizard(startEvent, stepEvent, abandonedEvent, wizardName, wizardTitle, globals) {
-  if (typeof document === 'undefined' || typeof window === 'undefined') return false;
-  const wizard = document.getElementById(globals?.field?.$id) || document.querySelector('form .wizard');
-  if (!wizard || wizard.dataset.wizardTracked === 'true') return false;
-  wizard.dataset.wizardTracked = 'true';
-
-  const form = wizard.closest('form') || document.querySelector('form');
-  const titles = () => [...wizard.querySelectorAll('.wizard-menu-item')]
-    .map((item) => item.textContent.trim());
-  const pushWizard = (stepIndex) => {
-    const stepTitles = titles();
-    if (!stepTitles.length || typeof window.updateDataLayer !== 'function') return;
-    window.updateDataLayer({
-      wizard: {
-        name: wizardName,
-        title: wizardTitle,
-        steps: stepTitles.map((title, index) => ({ name: `${wizardName}-step-${index + 1}`, title })),
-        currentStep: stepIndex + 1,
-      },
-    });
+  const config = {
+    startEvent,
+    stepEvent,
+    abandonedEvent,
+    wizardName,
+    wizardTitle,
+    wizardId: globals?.field?.$id,
   };
-  const pushValues = () => {
-    const updates = buildDataLayerUpdatesFromData(globals.functions.exportData());
-    if (updates && typeof window.updateDataLayer === 'function') window.updateDataLayer(updates);
-  };
-
-  wizard.addEventListener('wizard:navigate', (event) => {
-    const { prevStep, currStep } = event.detail || {};
-    pushValues();
-    if (Number.isFinite(prevStep?.index) && Number.isFinite(currStep?.index)
-      && currStep.index > prevStep.index) {
-      pushWizard(currStep.index);
-      dispatchCustomEvent(stepEvent);
-    }
-  });
-
-  let submitted = false;
-  let abandoned = false;
-  if (form) {
-    form.addEventListener('submit', () => { submitted = true; }, true);
-    form.addEventListener('click', (event) => {
-      if (event.target?.closest?.('button[type="submit"]')) submitted = true;
-    }, true);
+  if (typeof document !== 'undefined') {
+    // Called on the page itself: no worker in between.
+    startWizardTracking(config);
+    return true;
   }
-  const abandon = () => {
-    if (submitted || abandoned) return;
-    abandoned = true;
-    dispatchCustomEvent(abandonedEvent);
-  };
-  window.addEventListener('pagehide', abandon);
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') abandon();
-  });
+  // Called in the rule engine's worker, which has no page: hand the work to the page.
+  if (typeof BroadcastChannel === 'undefined') return false;
+  const channel = new BroadcastChannel(WIZARD_CHANNEL);
+  channel.postMessage(config);
+  channel.close();
+  return true;
+}
 
-  pushWizard(0);
-  dispatchCustomEvent(startEvent);
+/**
+ * Track the submit and submit the form
+ * @name trackSubmit Tracks the submit (data layer, identity, Launch event), then submits the form
+ * @param {string} eventName Launch event fired on submit, for example create-account-submit
+ * @param {string} email Email of the user, taken from the form field the author picks
+ * @param {scope} globals
+ * @return {boolean} true when the form was valid and submitted, false when it has errors
+ */
+function trackSubmit(eventName, email, globals) {
+  // The same steps as pushFormToDataLayer, setLaunchIdentity and fireLaunchEvent, run in this order
+  // only for a valid form, then the default submit that a click rule would otherwise replace.
+  const errors = globals.functions.validate();
+  if (Array.isArray(errors) && errors.length) return false;
+  pushFormToDataLayer(globals);
+  setLaunchIdentity(email);
+  fireLaunchEvent(eventName);
+  globals.functions.submitForm(globals.functions.exportData(), true, 'multipart/form-data');
   return true;
 }
 
@@ -186,4 +276,5 @@ export {
   fireLaunchEvent,
   setMobileEventType,
   trackWizard,
+  trackSubmit,
 };
