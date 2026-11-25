@@ -234,9 +234,10 @@ if (typeof document !== 'undefined' && typeof BroadcastChannel !== 'undefined') 
  * @param {string} wizardName
  * @param {string} wizardTitle
  * @param {scope} globals
- * @return {boolean}
  */
 function trackWizard(startEvent, stepEvent, abandonedEvent, wizardName, wizardTitle, globals) {
+  // Returns nothing on purpose: the rule engine assigns a returned value to the field the rule
+  // sits on, and a wizard (fieldset) has no setter for value, which stops the form from loading.
   const config = {
     startEvent,
     stepEvent,
@@ -248,14 +249,13 @@ function trackWizard(startEvent, stepEvent, abandonedEvent, wizardName, wizardTi
   if (typeof document !== 'undefined') {
     // Called on the page itself: no worker in between.
     startWizardTracking(config);
-    return true;
+    return;
   }
   // Called in the rule engine's worker, which has no page: hand the work to the page.
-  if (typeof BroadcastChannel === 'undefined') return false;
+  if (typeof BroadcastChannel === 'undefined') return;
   const channel = new BroadcastChannel(WIZARD_CHANNEL);
   channel.postMessage(config);
   channel.close();
-  return true;
 }
 
 /**
